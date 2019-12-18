@@ -7,10 +7,6 @@ import (
 type pingHandler struct {
 }
 
-type PingHandler interface {
-	Ping()
-}
-
 func NewPingHandler() *pingHandler {
 	return &pingHandler{}
 }
