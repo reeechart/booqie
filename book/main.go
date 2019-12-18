@@ -1,7 +1,8 @@
 package main
 
-import "fmt"
+import "github.com/reeechart/booql/book/server"
 
 func main() {
-	fmt.Println("Book service")
+	server := server.NewServer("", 5000)
+	server.Run()
 }
