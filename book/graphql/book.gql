@@ -1,0 +1,34 @@
+type Book {
+    id: Int!
+    title: String!
+    author: Author!
+    year: Int
+}
+
+type Author {
+    id: Int!
+    name: String!
+}
+
+type BookQuery {
+    getBooks(): [Book]
+    getAuthors(): [Author]
+    getBook(id: Int!): Book
+    searchBooks(title: String, author: String): [Book]
+}
+
+input BookInput {
+    title: String
+    author: Author
+    year: Int
+}
+
+type BookMutation {
+    addBook(input: BookInput): Book
+    updateBook(id: Int!, input: BookInput): Book
+}
+
+schema {
+    query: BookQuery
+    mutation: BookMutation
+}
