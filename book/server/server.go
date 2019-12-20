@@ -29,6 +29,11 @@ func (s *server) setupHandler() {
 	s.router.Route("/ping", func(r chi.Router) {
 		r.Get("/", pingHandler.Ping)
 	})
+
+	s.router.Route("/graphql", func(r chi.Router) {
+		r.Get("/", pingHandler.Ping)
+		r.Post("/", pingHandler.Ping)
+	})
 }
 
 func (s *server) Run() {
