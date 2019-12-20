@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -9,12 +10,12 @@ import (
 )
 
 type graphqlHandler struct {
-	Schema *graphql.Schema
+	schema *graphql.Schema
 }
 
 func NewGraphQLHandler(schema *graphql.Schema) *graphqlHandler {
 	return &graphqlHandler{
-		Schema: schema,
+		schema: schema,
 	}
 }
 
@@ -23,5 +24,16 @@ func (handler *graphqlHandler) GraphQL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	w.Write([]byte(graphqlParam.Query))
+	response := handler.schema.Exec(r.Context(),
+		graphqlParam.Query,
+		graphqlParam.OperationName,
+		graphqlParam.Variables)
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonResponse)
 }

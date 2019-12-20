@@ -14,7 +14,7 @@ func NewQueryResolver() *QueryResolver {
 }
 
 func (query *QueryResolver) GetBooks() *[]*BookResolver {
-	_ = []models.Book{
+	dummyBooks := []models.Book{
 		models.Book{
 			Id:    1,
 			Title: "Book 1",
@@ -35,7 +35,10 @@ func (query *QueryResolver) GetBooks() *[]*BookResolver {
 		},
 	}
 
-	return &[]*BookResolver{}
+	return &[]*BookResolver{
+		&BookResolver{&dummyBooks[0]},
+		&BookResolver{&dummyBooks[1]},
+	}
 	// parse query
 	// handler.schema.exec (processed by resolver)
 }
