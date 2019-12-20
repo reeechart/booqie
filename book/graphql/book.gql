@@ -13,8 +13,8 @@ type Author {
 type Query {
     getBooks(): [Book]
     getAuthors(): [Author]
-    getBook(id: Int!): Book
-    searchBooks(title: String, author: String): [Book]
+    getBookById(id: Int!): Book
+    # searchBook(title: String, author: String, year: Int): [Book]
 }
 
 input BookInput {
@@ -36,5 +36,5 @@ type Mutation {
 
 schema {
     query: Query
-    mutation: Mutation
+    # mutation: Mutation
 }
