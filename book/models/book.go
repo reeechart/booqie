@@ -7,10 +7,10 @@ import (
 )
 
 type Book struct {
-	Id     int    `json:"id"`
+	Id     int32  `json:"id"`
 	Title  string `json:"title"`
 	Author Author `json:"author"`
-	Year   int    `json:"year"`
+	Year   int32  `json:"year"`
 }
 
 func (book *Book) Validate() error {
