@@ -13,3 +13,7 @@ func (resolver *AuthorResolver) Id() int32 {
 func (resolver *AuthorResolver) Name() string {
 	return resolver.author.Name
 }
+
+type authorQueryArgs struct {
+	Id int32
+}

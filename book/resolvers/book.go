@@ -21,3 +21,10 @@ func (resolver *BookResolver) Author() *AuthorResolver {
 func (resolver *BookResolver) Year() int32 {
 	return resolver.book.Year
 }
+
+type bookQueryArgs struct {
+	Id     int32
+	Title  *string
+	Author *string
+	Year   *int32
+}
