@@ -6,7 +6,7 @@ type AuthorResolver struct {
 	author *models.Author
 }
 
-func (resolver *AuthorResolver) Id() int {
+func (resolver *AuthorResolver) Id() int32 {
 	return resolver.author.Id
 }
 

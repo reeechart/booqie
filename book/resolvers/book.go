@@ -6,7 +6,7 @@ type BookResolver struct {
 	book *models.Book
 }
 
-func (resolver *BookResolver) Id() int {
+func (resolver *BookResolver) Id() int32 {
 	return resolver.book.Id
 }
 
@@ -14,10 +14,10 @@ func (resolver *BookResolver) Title() string {
 	return resolver.book.Title
 }
 
-func (resolver *BookResolver) Author() models.Author {
-	return resolver.book.Author
+func (resolver *BookResolver) Author() *AuthorResolver {
+	return &AuthorResolver{&resolver.book.Author}
 }
 
-func (resolver *BookResolver) Year() int {
+func (resolver *BookResolver) Year() int32 {
 	return resolver.book.Year
 }
