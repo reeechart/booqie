@@ -10,7 +10,7 @@ type Author {
     name: String!
 }
 
-type BookQuery {
+type Query {
     getBooks(): [Book]
     getAuthors(): [Author]
     getBook(id: Int!): Book
@@ -23,9 +23,15 @@ input BookInput {
     year: Int
 }
 
-type BookMutation {
+input AuthorInput {
+    name: String
+}
+
+type Mutation {
     addBook(input: BookInput): Book
     updateBook(id: Int!, input: BookInput): Book
+    addAuthor(input: AuthorInput): Author
+    updateAuthor(id: Int!, input: AuthorInput): Author
 }
 
 schema {
