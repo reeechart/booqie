@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/reeechart/booql/book/graphql"
 	"github.com/reeechart/booql/book/handlers"
 )
 
@@ -24,15 +25,17 @@ func NewServer(host string, port int) *server {
 }
 
 func (s *server) setupHandler() {
-	pingHandler := handlers.NewPingHandler()
+	graphqlSchema := graphql.GetSchema()
 
+	pingHandler := handlers.NewPingHandler()
+	graphqlHandler := handlers.NewGraphQLHandler(graphqlSchema)
 	s.router.Route("/ping", func(r chi.Router) {
 		r.Get("/", pingHandler.Ping)
 	})
 
 	s.router.Route("/graphql", func(r chi.Router) {
-		r.Get("/", pingHandler.Ping)
-		r.Post("/", pingHandler.Ping)
+		r.Get("/", graphqlHandler.GraphQL)
+		r.Post("/", graphqlHandler.GraphQL)
 	})
 }
 
