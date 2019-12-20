@@ -8,16 +8,16 @@ type GraphQLFile struct {
 	Content string
 }
 
-func NewGraphQLFile(filename string) (*GraphQLFile, error) {
+func newGraphQLFile(filename string) (*GraphQLFile, error) {
 	gqlFile := GraphQLFile{}
-	err := gqlFile.LoadGraphQLFile(filename)
+	err := gqlFile.loadGraphQLFile(filename)
 	if err != nil {
 		return nil, err
 	}
 	return &gqlFile, nil
 }
 
-func (reader *GraphQLFile) LoadGraphQLFile(filename string) error {
+func (reader *GraphQLFile) loadGraphQLFile(filename string) error {
 	byteContent, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
