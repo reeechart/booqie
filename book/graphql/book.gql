@@ -35,6 +35,6 @@ type Mutation {
 }
 
 schema {
-    query: BookQuery
-    mutation: BookMutation
+    query: Query
+    mutation: Mutation
 }
