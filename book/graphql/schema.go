@@ -6,7 +6,7 @@ import (
 )
 
 func GetSchema() *graphql.Schema {
-	gqlFile, err := newGraphQLFile("book/graphql/book.gql")
+	gqlFile, err := newGraphQLFile("book/graphql/booql.gql")
 	if err != nil {
 		panic(err)
 	}
