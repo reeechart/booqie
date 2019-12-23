@@ -156,13 +156,9 @@ func (query *QueryResolver) AddAuthor(ctx context.Context, args authorInput) *Au
 }
 
 func (query *QueryResolver) UpdateAuthor(ctx context.Context, args authorInput) *AuthorResolver {
-	for _, author := range dummyAuthors {
-		if author.Id == args.Id {
-			author.Name = args.Input.Name
-		}
-
-		return &AuthorResolver{&author}
+	updatedAuthor, err := query.authorRepo.UpdateAuthor(args.Id, args.Input.Name)
+	if err != nil {
+		return nil
 	}
-
-	return &AuthorResolver{}
+	return &AuthorResolver{updatedAuthor}
 }
