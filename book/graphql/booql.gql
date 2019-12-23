@@ -14,7 +14,7 @@ type Query {
     getBooks(): [Book]
     getAuthors(): [Author]
     getBookById(id: Int!): Book
-    # searchBook(title: String, author: String, year: Int): [Book]
+    searchBooks(title: String, author: String, year: Int): [Book]
 }
 
 input BookInput {

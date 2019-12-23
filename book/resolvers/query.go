@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+	"strings"
 
 	"github.com/reeechart/booql/book/models"
 )
@@ -72,4 +73,30 @@ func (query *QueryResolver) GetBookById(ctx context.Context, args bookQueryArgs)
 		}
 	}
 	return nil
+}
+
+func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs) *[]*BookResolver {
+	books := []*BookResolver{}
+	for bookIdx, book := range dummyBooks {
+		if args.Title != nil {
+			if !strings.Contains(book.Title, *args.Title) {
+				continue
+			}
+		}
+
+		if args.Author != nil {
+			if !strings.Contains(book.Author.Name, *args.Author) {
+				continue
+			}
+		}
+
+		if args.Year != nil {
+			if book.Year != *args.Year {
+				continue
+			}
+		}
+
+		books = append(books, &BookResolver{&dummyBooks[bookIdx]})
+	}
+	return &books
 }
