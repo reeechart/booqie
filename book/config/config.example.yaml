@@ -1,0 +1,6 @@
+DBUSER: postgres
+DBPASS: postgres
+DBNAME: booql
+DBHOST: localhost
+DBPORT: 5432
+DBSSL: disable
