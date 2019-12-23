@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/reeechart/booql/book/models"
@@ -99,4 +100,20 @@ func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs)
 		books = append(books, &BookResolver{&dummyBooks[bookIdx]})
 	}
 	return &books
+}
+
+func (query *QueryResolver) AddBook(ctx context.Context, args bookInput) *BookResolver {
+	newBook := models.Book{
+		Id:    3,
+		Title: *args.Input.Title,
+		Author: models.Author{
+			Id:   *args.Input.Author,
+			Name: "DUMMY",
+		},
+		Year: *args.Input.Year,
+	}
+
+	dummyBooks = append(dummyBooks, newBook)
+	fmt.Println(len(dummyBooks))
+	return &BookResolver{&newBook}
 }

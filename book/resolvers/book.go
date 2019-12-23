@@ -28,3 +28,13 @@ type bookQueryArgs struct {
 	Author *string
 	Year   *int32
 }
+
+type bookInput struct {
+	Input *bookInputModel
+}
+
+type bookInputModel struct {
+	Title  *string
+	Author *int32
+	Year   *int32
+}
