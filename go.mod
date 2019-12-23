@@ -8,5 +8,6 @@ require (
 	github.com/graph-gophers/graphql-go v0.0.0-20191115155744-f33e81362277
 	github.com/graphql-go/graphql v0.7.8
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/lib/pq v1.0.0
 	github.com/spf13/viper v1.6.1
 )
