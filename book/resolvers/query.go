@@ -148,13 +148,11 @@ func (query *QueryResolver) UpdateBook(ctx context.Context, args bookInput) *Boo
 }
 
 func (query *QueryResolver) AddAuthor(ctx context.Context, args authorInput) *AuthorResolver {
-	newAuthor := models.Author{
-		Id:   4,
-		Name: args.Input.Name,
+	newAuthor, err := query.authorRepo.AddAuthor(args.Input.Name)
+	if err != nil {
+		return nil
 	}
-
-	dummyAuthors = append(dummyAuthors, newAuthor)
-	return &AuthorResolver{&newAuthor}
+	return &AuthorResolver{newAuthor}
 }
 
 func (query *QueryResolver) UpdateAuthor(ctx context.Context, args authorInput) *AuthorResolver {

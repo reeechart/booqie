@@ -8,8 +8,10 @@ import (
 
 var (
 	authorGetAll  = "GetAllAuthorsQuery"
+	authorInsert  = "InsertAuthorQuery"
 	authorQueries = map[string]string{
 		authorGetAll: `SELECT * FROM public.author`,
+		authorInsert: `INSERT INTO public.author (name) VALUES ($1) RETURNING id, name`,
 	}
 )
 
@@ -49,4 +51,20 @@ func (repo *AuthorRepo) ListAuthors() ([]models.Author, error) {
 	}
 
 	return authors, nil
+}
+
+func (repo *AuthorRepo) AddAuthor(name string) (*models.Author, error) {
+	rows, err := repo.stmts[authorInsert].Query(name)
+	if err != nil {
+		return nil, err
+	}
+
+	rows.Next()
+	author := models.Author{}
+	err = rows.Scan(&author.Id, &author.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &author, nil
 }
