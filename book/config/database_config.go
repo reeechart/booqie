@@ -28,7 +28,7 @@ func getDatabaseConfig(viper *viper.Viper) *databaseConfig {
 		user:   viper.GetString("DBUSER"),
 		dbname: viper.GetString("DBNAME"),
 		host:   viper.GetString("DBHOST"),
-		port:   viper.GetString("DBPASS"),
+		port:   viper.GetString("DBPORT"),
 		ssl:    viper.GetString("DBSSL"),
 	}
 }
