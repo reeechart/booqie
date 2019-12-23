@@ -31,7 +31,7 @@ type Mutation {
     addBook(input: BookInput): Book
     updateBook(id: Int!, input: BookInput): Book
     addAuthor(input: AuthorInput): Author
-    # updateAuthor(id: Int!, input: AuthorInput): Author
+    updateAuthor(id: Int!, input: AuthorInput): Author
 }
 
 schema {

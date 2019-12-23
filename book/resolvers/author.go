@@ -20,6 +20,7 @@ type authorQueryArgs struct {
 }
 
 type authorInput struct {
+	Id    int32
 	Input *authorInputModel
 }
 

@@ -150,3 +150,15 @@ func (query *QueryResolver) AddAuthor(ctx context.Context, args authorInput) *Au
 	dummyAuthors = append(dummyAuthors, newAuthor)
 	return &AuthorResolver{&newAuthor}
 }
+
+func (query *QueryResolver) UpdateAuthor(ctx context.Context, args authorInput) *AuthorResolver {
+	for _, author := range dummyAuthors {
+		if author.Id == args.Id {
+			author.Name = args.Input.Name
+		}
+
+		return &AuthorResolver{&author}
+	}
+
+	return &AuthorResolver{}
+}
