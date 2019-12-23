@@ -86,7 +86,7 @@ func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs)
 		}
 
 		if args.Author != nil {
-			if !strings.Contains(book.Author.Name, *args.Author) {
+			if book.Author.Id != *args.Author {
 				continue
 			}
 		}
