@@ -117,3 +117,26 @@ func (query *QueryResolver) AddBook(ctx context.Context, args bookInput) *BookRe
 	fmt.Println(len(dummyBooks))
 	return &BookResolver{&newBook}
 }
+
+func (query *QueryResolver) UpdateBook(ctx context.Context, args bookInput) *BookResolver {
+	for _, book := range dummyBooks {
+		if book.Id == args.Id {
+			if args.Input.Title != nil {
+				book.Title = *args.Input.Title
+			}
+
+			if args.Input.Author != nil {
+				book.Author.Id = *args.Input.Author
+				book.Author.Name = "CHANGED"
+			}
+
+			if args.Input.Year != nil {
+				book.Year = *args.Input.Year
+			}
+		}
+
+		return &BookResolver{&book}
+	}
+
+	return &BookResolver{}
+}

@@ -28,6 +28,7 @@ type bookQueryArgs struct {
 }
 
 type bookInput struct {
+	Id    int32
 	Input *bookInputModel
 }
 
