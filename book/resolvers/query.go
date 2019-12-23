@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/reeechart/booql/book/infra"
 	"github.com/reeechart/booql/book/models"
+	"github.com/reeechart/booql/book/repo"
 )
 
 var dummyBooks = []models.Book{
@@ -45,10 +47,14 @@ var dummyAuthors = []models.Author{
 }
 
 type QueryResolver struct {
+	authorRepo *repo.AuthorRepo
 }
 
 func NewQueryResolver() *QueryResolver {
-	return &QueryResolver{}
+	db := infra.GetDB()
+	return &QueryResolver{
+		authorRepo: repo.NewAuthorRepo(db),
+	}
 }
 
 func (query *QueryResolver) GetBooks() *[]*BookResolver {
@@ -59,11 +65,11 @@ func (query *QueryResolver) GetBooks() *[]*BookResolver {
 }
 
 func (query *QueryResolver) GetAuthors() *[]*AuthorResolver {
-	return &[]*AuthorResolver{
-		&AuthorResolver{&dummyAuthors[0]},
-		&AuthorResolver{&dummyAuthors[1]},
-		&AuthorResolver{&dummyAuthors[2]},
+	authors, err := query.authorRepo.ListAuthors()
+	if err != nil {
+		return nil
 	}
+	return NewAuthorResolverList(authors)
 }
 
 func (query *QueryResolver) GetBookById(ctx context.Context, args bookQueryArgs) *BookResolver {

@@ -27,3 +27,12 @@ type authorInput struct {
 type authorInputModel struct {
 	Name string
 }
+
+func NewAuthorResolverList(authors []models.Author) *[]*AuthorResolver {
+	resolvers := []*AuthorResolver{}
+	for idx, _ := range authors {
+		resolver := AuthorResolver{&authors[idx]}
+		resolvers = append(resolvers, &resolver)
+	}
+	return &resolvers
+}

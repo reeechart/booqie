@@ -13,13 +13,13 @@ var (
 	}
 )
 
-type authorRepo struct {
+type AuthorRepo struct {
 	db    *sql.DB
 	stmts map[string]*sql.Stmt
 }
 
-func NewAuthorRepo(db *sql.DB) *authorRepo {
-	stmts := make(map[string]*sql.Stmt, len(bookQueries))
+func NewAuthorRepo(db *sql.DB) *AuthorRepo {
+	stmts := make(map[string]*sql.Stmt, len(authorQueries))
 	for queryKey, query := range authorQueries {
 		stmt, err := db.Prepare(query)
 		if err != nil {
@@ -28,10 +28,10 @@ func NewAuthorRepo(db *sql.DB) *authorRepo {
 		stmts[queryKey] = stmt
 	}
 
-	return &authorRepo{db: db, stmts: stmts}
+	return &AuthorRepo{db: db, stmts: stmts}
 }
 
-func (repo *authorRepo) ListAuthors() ([]models.Author, error) {
+func (repo *AuthorRepo) ListAuthors() ([]models.Author, error) {
 	authors := []models.Author{}
 	rows, err := repo.stmts[authorGetAll].Query()
 	if err != nil {
