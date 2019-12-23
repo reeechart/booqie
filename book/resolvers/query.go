@@ -31,21 +31,6 @@ var dummyBooks = []models.Book{
 	},
 }
 
-var dummyAuthors = []models.Author{
-	models.Author{
-		Id:   1,
-		Name: "Author 1",
-	},
-	models.Author{
-		Id:   2,
-		Name: "Author 2",
-	},
-	models.Author{
-		Id:   3,
-		Name: "Author 3",
-	},
-}
-
 type QueryResolver struct {
 	authorRepo *repo.AuthorRepo
 }
