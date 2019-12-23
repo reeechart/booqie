@@ -16,4 +16,13 @@ func (resolver *AuthorResolver) Name() string {
 
 type authorQueryArgs struct {
 	Id int32
+	authorInputModel
+}
+
+type authorInput struct {
+	Input *authorInputModel
+}
+
+type authorInputModel struct {
+	Name string
 }
