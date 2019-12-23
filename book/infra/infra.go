@@ -8,22 +8,20 @@ import (
 	"github.com/reeechart/booql/book/config"
 )
 
-type infra struct {
-	db *sql.DB
-}
-
 var (
 	dbOnce sync.Once
+	db     *sql.DB
 )
 
-func (infra *infra) GetDB() *sql.DB {
+func GetDB() *sql.DB {
 	dbOnce.Do(func() {
-		db, err := sql.Open("postgres", config.GetDatabaseConnectionString())
+		sqlDb, err := sql.Open("postgres", config.GetDatabaseConnectionString())
 		if err != nil {
 			panic(err)
 		}
-		infra.db = db
+
+		db = sqlDb
 	})
 
-	return infra.db
+	return db
 }
