@@ -2,7 +2,6 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/reeechart/booql/book/infra"
 	"github.com/reeechart/booql/book/models"
@@ -84,19 +83,11 @@ func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs)
 }
 
 func (query *QueryResolver) AddBook(ctx context.Context, args bookInput) *BookResolver {
-	newBook := models.Book{
-		Id:    3,
-		Title: *args.Input.Title,
-		Author: models.Author{
-			Id:   *args.Input.Author,
-			Name: "DUMMY",
-		},
-		Year: *args.Input.Year,
+	newBook, err := query.bookRepo.AddBook(args.Input.Title, args.Input.Author, args.Input.Year)
+	if err != nil {
+		return nil
 	}
-
-	dummyBooks = append(dummyBooks, newBook)
-	fmt.Println(len(dummyBooks))
-	return &BookResolver{&newBook}
+	return &BookResolver{newBook}
 }
 
 func (query *QueryResolver) UpdateBook(ctx context.Context, args bookInput) *BookResolver {

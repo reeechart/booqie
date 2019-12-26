@@ -10,6 +10,7 @@ var (
 	bookGetAll  = "GetAllBooksQuery"
 	bookGetById = "GetBookByIdQuery"
 	bookSearch  = "SearchBooksQuery"
+	bookInsert  = "InsertBookQuery"
 	bookQueries = map[string]string{
 		bookGetAll:  `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id`,
 		bookGetById: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id WHERE book.id = $1`,
@@ -17,6 +18,9 @@ var (
 			book.title LIKE CONCAT('%', $1::VARCHAR(255), '%') AND
 			(book.author_id = $2 OR $2 IS NULL) AND
 			(book.year = $3 OR $3 IS NULL)`,
+		bookInsert: `WITH inserted_book (id, title, author_id, year) AS (
+			INSERT INTO public.book (title, author_id, year) VALUES ($1, $2, $3) RETURNING id, title, author_id, year)
+			SELECT inserted_book.*, author.name AS author_name FROM inserted_book LEFT JOIN public.author ON inserted_book.author_id = author.id`,
 	}
 )
 
@@ -91,4 +95,20 @@ func (repo *BookRepo) SearchBooks(title *string, authorId *int32, year *int32) (
 	}
 
 	return books, nil
+}
+
+func (repo *BookRepo) AddBook(title *string, authorId *int32, year *int32) (*models.Book, error) {
+	rows, err := repo.stmts[bookInsert].Query(title, authorId, year)
+	if err != nil {
+		return nil, err
+	}
+
+	rows.Next()
+	book := models.Book{}
+	err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &book, nil
 }
