@@ -42,6 +42,6 @@ func (s *server) setupHandler() {
 func (s *server) Run() {
 	addr := fmt.Sprintf("%s:%d", s.host, s.port)
 	s.setupHandler()
-	log.Printf("Server is listening at %s\n", addr)
+	log.Printf("Book server is listening at %s\n", addr)
 	log.Fatal(http.ListenAndServe(addr, s.router))
 }
