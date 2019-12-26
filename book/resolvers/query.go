@@ -67,6 +67,14 @@ func (query *QueryResolver) GetBookById(ctx context.Context, args bookQueryArgs)
 	return &BookResolver{book}
 }
 
+func (query *QueryResolver) GetAuthorById(ctx context.Context, args authorQueryArgs) *AuthorResolver {
+	author, err := query.authorRepo.GetAuthorById(args.Id)
+	if err != nil {
+		return nil
+	}
+	return &AuthorResolver{author}
+}
+
 func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs) *[]*BookResolver {
 	books, err := query.bookRepo.SearchBooks(args.Title, args.Author, args.Year)
 	if err != nil {

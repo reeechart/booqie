@@ -8,12 +8,14 @@ import (
 
 var (
 	authorGetAll  = "GetAllAuthorsQuery"
+	authorGetById = "GetAuthorByIdQuery"
 	authorInsert  = "InsertAuthorQuery"
 	authorUpdate  = "UpdateAuthorQuery"
 	authorQueries = map[string]string{
-		authorGetAll: `SELECT * FROM public.author`,
-		authorInsert: `INSERT INTO public.author (name) VALUES ($1) RETURNING id, name`,
-		authorUpdate: `UPDATE public.author SET name=$2 WHERE id=$1 RETURNING id, name`,
+		authorGetAll:  `SELECT * FROM public.author`,
+		authorGetById: `SELECT * FROM public.author WHERE id = $1`,
+		authorInsert:  `INSERT INTO public.author (name) VALUES ($1) RETURNING id, name`,
+		authorUpdate:  `UPDATE public.author SET name = $2 WHERE id = $1 RETURNING id, name`,
 	}
 )
 
@@ -53,6 +55,22 @@ func (repo *AuthorRepo) ListAuthors() ([]models.Author, error) {
 	}
 
 	return authors, nil
+}
+
+func (repo *AuthorRepo) GetAuthorById(id int32) (*models.Author, error) {
+	rows, err := repo.stmts[authorGetById].Query(id)
+	if err != nil {
+		return nil, err
+	}
+
+	rows.Next()
+	author := models.Author{}
+	err = rows.Scan(&author.Id, &author.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &author, nil
 }
 
 func (repo *AuthorRepo) AddAuthor(name string) (*models.Author, error) {
