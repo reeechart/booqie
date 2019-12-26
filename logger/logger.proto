@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/Empty.proto";
+import "google/protobuf/Timestamp.proto";
 
 package logger;
 
@@ -10,5 +11,6 @@ service Logger {
 
 message Event {
     int32 user_id = 1;
-    string activity = 2;
+    google.protobuf.Timestamp timestamp = 2;
+    string activity = 3;
 }
