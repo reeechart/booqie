@@ -8,8 +8,10 @@ import (
 
 var (
 	bookGetAll  = "GetAllBooksQuery"
+	bookGetById = "GetBookById"
 	bookQueries = map[string]string{
-		bookGetAll: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id`,
+		bookGetAll:  `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id`,
+		bookGetById: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id WHERE book.id = $1`,
 	}
 )
 
@@ -48,4 +50,20 @@ func (repo *BookRepo) ListBooks() ([]models.Book, error) {
 	}
 
 	return books, nil
+}
+
+func (repo *BookRepo) GetBookById(id int32) (*models.Book, error) {
+	book := models.Book{}
+	rows, err := repo.stmts[bookGetById].Query(id)
+	if err != nil {
+		return nil, err
+	}
+
+	rows.Next()
+	err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &book, nil
 }

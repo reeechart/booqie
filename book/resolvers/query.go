@@ -61,13 +61,11 @@ func (query *QueryResolver) GetAuthors() *[]*AuthorResolver {
 }
 
 func (query *QueryResolver) GetBookById(ctx context.Context, args bookQueryArgs) *BookResolver {
-	id := args.Id
-	for _, book := range dummyBooks {
-		if book.Id == id {
-			return &BookResolver{&book}
-		}
+	book, err := query.bookRepo.GetBookById(args.Id)
+	if err != nil {
+		return nil
 	}
-	return nil
+	return &BookResolver{book}
 }
 
 func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs) *[]*BookResolver {
