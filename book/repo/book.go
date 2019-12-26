@@ -9,9 +9,14 @@ import (
 var (
 	bookGetAll  = "GetAllBooksQuery"
 	bookGetById = "GetBookByIdQuery"
+	bookSearch  = "SearchBooksQuery"
 	bookQueries = map[string]string{
 		bookGetAll:  `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id`,
 		bookGetById: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id WHERE book.id = $1`,
+		bookSearch: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id WHERE 
+			book.title LIKE CONCAT('%', $1::VARCHAR(255), '%') AND
+			(book.author_id = $2 OR $2 IS NULL) AND
+			(book.year = $3 OR $3 IS NULL)`,
 	}
 )
 
@@ -66,4 +71,24 @@ func (repo *BookRepo) GetBookById(id int32) (*models.Book, error) {
 	}
 
 	return &book, nil
+}
+
+func (repo *BookRepo) SearchBooks(title *string, authorId *int32, year *int32) ([]models.Book, error) {
+	books := []models.Book{}
+	rows, err := repo.stmts[bookSearch].Query(title, authorId, year)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		book := models.Book{}
+		err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		books = append(books, book)
+	}
+
+	return books, nil
 }
