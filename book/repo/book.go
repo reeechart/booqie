@@ -8,7 +8,7 @@ import (
 
 var (
 	bookGetAll  = "GetAllBooksQuery"
-	bookGetById = "GetBookById"
+	bookGetById = "GetBookByIdQuery"
 	bookQueries = map[string]string{
 		bookGetAll:  `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id`,
 		bookGetById: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id WHERE book.id = $1`,
