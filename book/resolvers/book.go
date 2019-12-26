@@ -37,3 +37,12 @@ type bookInputModel struct {
 	Author *int32
 	Year   *int32
 }
+
+func NewBookResolverList(books []models.Book) *[]*BookResolver {
+	resolvers := []*BookResolver{}
+	for idx, _ := range books {
+		resolver := BookResolver{&books[idx]}
+		resolvers = append(resolvers, &resolver)
+	}
+	return &resolvers
+}

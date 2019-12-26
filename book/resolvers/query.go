@@ -33,20 +33,23 @@ var dummyBooks = []models.Book{
 
 type QueryResolver struct {
 	authorRepo *repo.AuthorRepo
+	bookRepo   *repo.BookRepo
 }
 
 func NewQueryResolver() *QueryResolver {
 	db := infra.GetDB()
 	return &QueryResolver{
 		authorRepo: repo.NewAuthorRepo(db),
+		bookRepo:   repo.NewBookRepo(db),
 	}
 }
 
 func (query *QueryResolver) GetBooks() *[]*BookResolver {
-	return &[]*BookResolver{
-		&BookResolver{&dummyBooks[0]},
-		&BookResolver{&dummyBooks[1]},
+	books, err := query.bookRepo.ListBooks()
+	if err != nil {
+		return nil
 	}
+	return NewBookResolverList(books)
 }
 
 func (query *QueryResolver) GetAuthors() *[]*AuthorResolver {
