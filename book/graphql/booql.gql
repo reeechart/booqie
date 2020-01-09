@@ -1,13 +1,14 @@
 type Book {
     id: Int!
     title: String!
-    author: Author!
     year: Int!
+    authors: [Author!]!
 }
 
 type Author {
     id: Int!
     name: String!
+    books: [Book!]
 }
 
 type Query {
@@ -20,8 +21,8 @@ type Query {
 
 input BookInput {
     title: String
-    author: Int
     year: Int
+    authors: [Int!]!
 }
 
 input AuthorInput {
