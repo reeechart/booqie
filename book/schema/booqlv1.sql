@@ -60,23 +60,12 @@ ALTER SEQUENCE public.author_id_seq OWNED BY public.author.id;
 CREATE TABLE public.book (
     id bigint NOT NULL,
     title character varying(255) NOT NULL,
+    author_id bigint NOT NULL,
     year integer NOT NULL
 );
 
 
 ALTER TABLE public.book OWNER TO ferdinandusrichard;
-
---
--- Name: book_author; Type: TABLE; Schema: public; Owner: ferdinandusrichard
---
-
-CREATE TABLE public.book_author (
-    book_id bigint NOT NULL,
-    author_id bigint NOT NULL
-);
-
-
-ALTER TABLE public.book_author OWNER TO ferdinandusrichard;
 
 --
 -- Name: book_id_seq; Type: SEQUENCE; Schema: public; Owner: ferdinandusrichard
@@ -125,15 +114,7 @@ COPY public.author (id, name) FROM stdin;
 -- Data for Name: book; Type: TABLE DATA; Schema: public; Owner: ferdinandusrichard
 --
 
-COPY public.book (id, title, year) FROM stdin;
-\.
-
-
---
--- Data for Name: book_author; Type: TABLE DATA; Schema: public; Owner: ferdinandusrichard
---
-
-COPY public.book_author (book_id, author_id) FROM stdin;
+COPY public.book (id, title, author_id, year) FROM stdin;
 \.
 
 
@@ -160,14 +141,6 @@ ALTER TABLE ONLY public.author
 
 
 --
--- Name: book_author book_author_pkey; Type: CONSTRAINT; Schema: public; Owner: ferdinandusrichard
---
-
-ALTER TABLE ONLY public.book_author
-    ADD CONSTRAINT book_author_pkey PRIMARY KEY (book_id, author_id);
-
-
---
 -- Name: book book_pkey; Type: CONSTRAINT; Schema: public; Owner: ferdinandusrichard
 --
 
@@ -176,19 +149,11 @@ ALTER TABLE ONLY public.book
 
 
 --
--- Name: book_author book_author_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ferdinandusrichard
+-- Name: book book_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ferdinandusrichard
 --
 
-ALTER TABLE ONLY public.book_author
-    ADD CONSTRAINT book_author_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.author(id);
-
-
---
--- Name: book_author book_author_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: ferdinandusrichard
---
-
-ALTER TABLE ONLY public.book_author
-    ADD CONSTRAINT book_author_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.book(id);
+ALTER TABLE ONLY public.book
+    ADD CONSTRAINT book_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.author(id);
 
 
 --
