@@ -25,7 +25,7 @@ func (query *QueryResolver) GetBooks() *[]*BookResolver {
 	if err != nil {
 		return nil
 	}
-	return NewBookResolverList(books)
+	return NewBookResolverList(books, query)
 }
 
 func (query *QueryResolver) GetAuthors() *[]*AuthorResolver {
@@ -33,7 +33,7 @@ func (query *QueryResolver) GetAuthors() *[]*AuthorResolver {
 	if err != nil {
 		return nil
 	}
-	return NewAuthorResolverList(authors)
+	return NewAuthorResolverList(authors, query)
 }
 
 func (query *QueryResolver) GetBookById(ctx context.Context, args bookQueryArgs) *BookResolver {
@@ -41,7 +41,7 @@ func (query *QueryResolver) GetBookById(ctx context.Context, args bookQueryArgs)
 	if err != nil {
 		return nil
 	}
-	return &BookResolver{book}
+	return &BookResolver{book, query}
 }
 
 func (query *QueryResolver) GetAuthorById(ctx context.Context, args authorQueryArgs) *AuthorResolver {
@@ -49,31 +49,15 @@ func (query *QueryResolver) GetAuthorById(ctx context.Context, args authorQueryA
 	if err != nil {
 		return nil
 	}
-	return &AuthorResolver{author}
-}
-
-func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs) *[]*BookResolver {
-	books, err := query.bookRepo.SearchBooks(args.Title, args.Author, args.Year)
-	if err != nil {
-		return nil
-	}
-	return NewBookResolverList(books)
+	return &AuthorResolver{author, query}
 }
 
 func (query *QueryResolver) AddBook(ctx context.Context, args bookInput) *BookResolver {
-	newBook, err := query.bookRepo.AddBook(args.Input.Title, args.Input.Author, args.Input.Year)
+	newBook, err := query.bookRepo.AddBook(args.Input.Title, args.Input.Authors, args.Input.Year)
 	if err != nil {
 		return nil
 	}
-	return &BookResolver{newBook}
-}
-
-func (query *QueryResolver) UpdateBook(ctx context.Context, args bookInput) *BookResolver {
-	updatedBook, err := query.bookRepo.UpdateBook(args.Id, args.Input.Title, args.Input.Author, args.Input.Year)
-	if err != nil {
-		return nil
-	}
-	return &BookResolver{updatedBook}
+	return &BookResolver{newBook, query}
 }
 
 func (query *QueryResolver) AddAuthor(ctx context.Context, args authorInput) *AuthorResolver {
@@ -81,7 +65,7 @@ func (query *QueryResolver) AddAuthor(ctx context.Context, args authorInput) *Au
 	if err != nil {
 		return nil
 	}
-	return &AuthorResolver{newAuthor}
+	return &AuthorResolver{newAuthor, query}
 }
 
 func (query *QueryResolver) UpdateAuthor(ctx context.Context, args authorInput) *AuthorResolver {
@@ -89,5 +73,5 @@ func (query *QueryResolver) UpdateAuthor(ctx context.Context, args authorInput) 
 	if err != nil {
 		return nil
 	}
-	return &AuthorResolver{updatedAuthor}
+	return &AuthorResolver{updatedAuthor, query}
 }

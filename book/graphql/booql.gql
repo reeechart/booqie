@@ -16,7 +16,7 @@ type Query {
     getAuthors(): [Author]
     getBookById(id: Int!): Book
     getAuthorById(id: Int!): Author
-    searchBooks(title: String, author: Int, year: Int): [Book]
+    # searchBooks(title: String, author: Int, year: Int): [Book]
 }
 
 input BookInput {
@@ -30,8 +30,8 @@ input AuthorInput {
 }
 
 type Mutation {
-    addBook(input: BookInput): Book
-    updateBook(id: Int!, input: BookInput): Book
+    # addBook(input: BookInput): Book
+    # updateBook(id: Int!, input: BookInput): Book
     addAuthor(input: AuthorInput): Author
     updateAuthor(id: Int!, input: AuthorInput): Author
 }

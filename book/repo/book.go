@@ -7,27 +7,16 @@ import (
 )
 
 var (
-	bookGetAll  = "GetAllBooksQuery"
-	bookGetById = "GetBookByIdQuery"
-	bookSearch  = "SearchBooksQuery"
-	bookInsert  = "InsertBookQuery"
-	bookUpdate  = "UpdateBookQuery"
-	bookQueries = map[string]string{
-		bookGetAll:  `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id`,
-		bookGetById: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id WHERE book.id = $1`,
-		bookSearch: `SELECT book.*, author.name AS author_name FROM public.book LEFT JOIN public.author ON book.author_id = author.id WHERE 
-			book.title LIKE CONCAT('%', $1::VARCHAR(255), '%') AND
-			(book.author_id = $2 OR $2 IS NULL) AND
-			(book.year = $3 OR $3 IS NULL)`,
-		bookInsert: `WITH inserted_book (id, title, author_id, year) AS (
-			INSERT INTO public.book (title, author_id, year) VALUES ($1, $2, $3) RETURNING id, title, author_id, year)
-			SELECT inserted_book.*, author.name AS author_name FROM inserted_book LEFT JOIN public.author ON inserted_book.author_id = author.id`,
-		bookUpdate: `WITH updated_book (id, title, author_id, year) AS (
-			UPDATE public.book SET
-				title = COALESCE($2, title),
-				author_id = COALESCE($3, author_id),
-				year = COALESCE($4, year) WHERE id = $1 RETURNING id, title, author_id, year)
-			SELECT updated_book.*, author.name AS author_name FROM updated_book LEFT JOIN public.author ON updated_book.author_id = author.id`,
+	bookGetAll         = "GetAllBooksQuery"
+	bookGetAllByAuthor = "GetAllBooksByAuthorQuery"
+	bookGetById        = "GetBookByIdQuery"
+	bookSearch         = "SearchBooksQuery"
+	bookInsert         = "InsertBookQuery"
+	bookUpdate         = "UpdateBookQuery"
+	bookQueries        = map[string]string{
+		bookGetAll:         `SELECT * FROM public.book`,
+		bookGetAllByAuthor: `SELECT book.* FROM public.book JOIN public.book_author ON book.id = book_author.book_id WHERE book_author.author_id = $1`,
+		bookGetById:        `SELECT * FROM public.book WHERE id = $1`,
 	}
 )
 
@@ -57,7 +46,27 @@ func (repo *BookRepo) ListBooks() ([]models.Book, error) {
 
 	for rows.Next() {
 		book := models.Book{}
-		err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+		err = rows.Scan(&book.Id, &book.Title, &book.Year)
+		if err != nil {
+			return nil, err
+		}
+
+		books = append(books, book)
+	}
+
+	return books, nil
+}
+
+func (repo *BookRepo) ListBooksByAuthor(authorId int32) ([]models.Book, error) {
+	books := []models.Book{}
+	rows, err := repo.stmts[bookGetAllByAuthor].Query(authorId)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		book := models.Book{}
+		err = rows.Scan(&book.Id, &book.Title, &book.Year)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +85,7 @@ func (repo *BookRepo) GetBookById(id int32) (*models.Book, error) {
 	}
 
 	rows.Next()
-	err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+	err = rows.Scan(&book.Id, &book.Title, &book.Year)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +102,7 @@ func (repo *BookRepo) SearchBooks(title *string, authorId *int32, year *int32) (
 
 	for rows.Next() {
 		book := models.Book{}
-		err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+		err = rows.Scan(&book.Id, &book.Title, &book.Year)
 		if err != nil {
 			return nil, err
 		}
@@ -104,15 +113,15 @@ func (repo *BookRepo) SearchBooks(title *string, authorId *int32, year *int32) (
 	return books, nil
 }
 
-func (repo *BookRepo) AddBook(title *string, authorId *int32, year *int32) (*models.Book, error) {
-	rows, err := repo.stmts[bookInsert].Query(title, authorId, year)
+func (repo *BookRepo) AddBook(title *string, authorIds []int32, year *int32) (*models.Book, error) {
+	rows, err := repo.stmts[bookInsert].Query(title, authorIds, year)
 	if err != nil {
 		return nil, err
 	}
 
 	rows.Next()
 	book := models.Book{}
-	err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+	err = rows.Scan(&book.Id, &book.Title, &book.Year)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +137,7 @@ func (repo *BookRepo) UpdateBook(id int32, title *string, authorId *int32, year 
 
 	rows.Next()
 	book := models.Book{}
-	err = rows.Scan(&book.Id, &book.Title, &book.Author.Id, &book.Year, &book.Author.Name)
+	err = rows.Scan(&book.Id, &book.Title, &book.Year)
 	if err != nil {
 		return nil, err
 	}
