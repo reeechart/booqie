@@ -10,13 +10,16 @@ var (
 	bookGetAll         = "GetAllBooksQuery"
 	bookGetAllByAuthor = "GetAllBooksByAuthorQuery"
 	bookGetById        = "GetBookByIdQuery"
-	bookSearch         = "SearchBooksQuery"
 	bookInsert         = "InsertBookQuery"
+	bookAuthorsInsert  = "InsertBookAuthorsQuery"
+	bookSearch         = "SearchBooksQuery"
 	bookUpdate         = "UpdateBookQuery"
 	bookQueries        = map[string]string{
 		bookGetAll:         `SELECT * FROM public.book`,
 		bookGetAllByAuthor: `SELECT book.* FROM public.book JOIN public.book_author ON book.id = book_author.book_id WHERE book_author.author_id = $1`,
 		bookGetById:        `SELECT * FROM public.book WHERE id = $1`,
+		bookInsert:         `INSERT INTO public.book (title, year) VALUES ($1, $2) RETURNING id, title, year`,
+		bookAuthorsInsert:  `INSERT INTO public.book_author (book_id, author_id) VALUES ($1, $2)`,
 	}
 )
 
@@ -114,8 +117,14 @@ func (repo *BookRepo) SearchBooks(title *string, authorId *int32, year *int32) (
 }
 
 func (repo *BookRepo) AddBook(title *string, authorIds []int32, year *int32) (*models.Book, error) {
-	rows, err := repo.stmts[bookInsert].Query(title, authorIds, year)
+	tx, err := repo.db.Begin()
 	if err != nil {
+		return nil, err
+	}
+
+	rows, err := repo.stmts[bookInsert].Query(title, year)
+	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
@@ -123,8 +132,19 @@ func (repo *BookRepo) AddBook(title *string, authorIds []int32, year *int32) (*m
 	book := models.Book{}
 	err = rows.Scan(&book.Id, &book.Title, &book.Year)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
+
+	for _, authorId := range authorIds {
+		_, err := repo.stmts[bookAuthorsInsert].Query(book.Id, authorId)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	err = tx.Commit()
 
 	return &book, nil
 }
