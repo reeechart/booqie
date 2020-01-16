@@ -30,8 +30,10 @@ func (resolver *BookResolver) Year() int32 {
 }
 
 type bookQueryArgs struct {
-	Id int32
-	bookInputModel
+	Id      int32
+	Title   *string
+	Authors *[]int32
+	Year    *int32
 }
 
 type bookInput struct {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/reeechart/booql/book/models"
+	"github.com/reeechart/booql/book/strings"
 )
 
 var (
@@ -20,6 +21,10 @@ var (
 		bookGetById:        `SELECT * FROM public.book WHERE id = $1`,
 		bookInsert:         `INSERT INTO public.book (title, year) VALUES ($1, $2) RETURNING id, title, year`,
 		bookAuthorsInsert:  `INSERT INTO public.book_author (book_id, author_id) VALUES ($1, $2)`,
+		bookSearch: `SELECT DISTINCT book.* FROM public.book JOIN public.book_author ON book.id = book_author.book_id WHERE 
+				(book.title LIKE CONCAT('%', $1::VARCHAR(255), '%')) AND
+				(book_author.author_id = ANY($2::INT[]) OR (array_length($2, 1) IS NULL)::BOOLEAN) AND
+				(book.year = $3 OR $3 IS NULL)`,
 	}
 )
 
@@ -96,9 +101,10 @@ func (repo *BookRepo) GetBookById(id int32) (*models.Book, error) {
 	return &book, nil
 }
 
-func (repo *BookRepo) SearchBooks(title *string, authorId *int32, year *int32) ([]models.Book, error) {
+func (repo *BookRepo) SearchBooks(title *string, authorIds *[]int32, year *int32) ([]models.Book, error) {
 	books := []models.Book{}
-	rows, err := repo.stmts[bookSearch].Query(title, authorId, year)
+	arrayOfIds := strings.ConvertInt32ArrayToStringArray(authorIds)
+	rows, err := repo.stmts[bookSearch].Query(title, arrayOfIds, year)
 	if err != nil {
 		return nil, err
 	}
