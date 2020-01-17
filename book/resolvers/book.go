@@ -1,12 +1,13 @@
 package resolvers
 
 import (
+	"github.com/reeechart/booql/book/manager"
 	"github.com/reeechart/booql/book/models"
 )
 
 type BookResolver struct {
-	book          *models.Book
-	queryResolver *QueryResolver
+	book        *models.Book
+	repoManager *manager.RepoManager
 }
 
 func (resolver *BookResolver) Id() int32 {
@@ -18,11 +19,11 @@ func (resolver *BookResolver) Title() string {
 }
 
 func (resolver *BookResolver) Authors() []*AuthorResolver {
-	authors, err := resolver.queryResolver.authorRepo.ListAuthorsByBook(resolver.book.Id)
+	authors, err := resolver.repoManager.AuthorRepo.ListAuthorsByBook(resolver.book.Id)
 	if err != nil {
 		return nil
 	}
-	return *NewAuthorResolverList(authors, resolver.queryResolver)
+	return *NewAuthorResolverList(authors, resolver.repoManager)
 }
 
 func (resolver *BookResolver) Year() int32 {
@@ -47,10 +48,10 @@ type bookInputModel struct {
 	Year    *int32
 }
 
-func NewBookResolverList(books []models.Book, queryResolver *QueryResolver) *[]*BookResolver {
+func NewBookResolverList(books []models.Book, repoManager *manager.RepoManager) *[]*BookResolver {
 	resolvers := []*BookResolver{}
 	for idx, _ := range books {
-		resolver := BookResolver{&books[idx], queryResolver}
+		resolver := BookResolver{&books[idx], repoManager}
 		resolvers = append(resolvers, &resolver)
 	}
 	return &resolvers

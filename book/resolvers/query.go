@@ -3,83 +3,79 @@ package resolvers
 import (
 	"context"
 
-	"github.com/reeechart/booql/book/infra"
-	"github.com/reeechart/booql/book/repo"
+	"github.com/reeechart/booql/book/manager"
 )
 
 type QueryResolver struct {
-	authorRepo *repo.AuthorRepo
-	bookRepo   *repo.BookRepo
+	repoManager *manager.RepoManager
 }
 
 func NewQueryResolver() *QueryResolver {
-	db := infra.GetDB()
 	return &QueryResolver{
-		authorRepo: repo.NewAuthorRepo(db),
-		bookRepo:   repo.NewBookRepo(db),
+		repoManager: manager.NewRepoManager(),
 	}
 }
 
 func (query *QueryResolver) GetBooks() *[]*BookResolver {
-	books, err := query.bookRepo.ListBooks()
+	books, err := query.repoManager.BookRepo.ListBooks()
 	if err != nil {
 		return nil
 	}
-	return NewBookResolverList(books, query)
+	return NewBookResolverList(books, query.repoManager)
 }
 
 func (query *QueryResolver) GetAuthors() *[]*AuthorResolver {
-	authors, err := query.authorRepo.ListAuthors()
+	authors, err := query.repoManager.AuthorRepo.ListAuthors()
 	if err != nil {
 		return nil
 	}
-	return NewAuthorResolverList(authors, query)
+	return NewAuthorResolverList(authors, query.repoManager)
 }
 
 func (query *QueryResolver) GetBookById(ctx context.Context, args bookQueryArgs) *BookResolver {
-	book, err := query.bookRepo.GetBookById(args.Id)
+	book, err := query.repoManager.BookRepo.GetBookById(args.Id)
 	if err != nil {
 		return nil
 	}
-	return &BookResolver{book, query}
+	return &BookResolver{book, query.repoManager}
 }
 
 func (query *QueryResolver) GetAuthorById(ctx context.Context, args authorQueryArgs) *AuthorResolver {
-	author, err := query.authorRepo.GetAuthorById(args.Id)
+	author, err := query.repoManager.AuthorRepo.GetAuthorById(args.Id)
 	if err != nil {
 		return nil
 	}
-	return &AuthorResolver{author, query}
+	return &AuthorResolver{author, query.repoManager}
 }
 
 func (query *QueryResolver) SearchBooks(ctx context.Context, args bookQueryArgs) *[]*BookResolver {
-	books, err := query.bookRepo.SearchBooks(args.Title, args.Authors, args.Year)
+	books, err := query.repoManager.BookRepo.SearchBooks(args.Title, args.Authors, args.Year)
 	if err != nil {
 		return nil
 	}
-	return NewBookResolverList(books, query)
+	return NewBookResolverList(books, query.repoManager)
 }
 
 func (query *QueryResolver) AddBook(ctx context.Context, args bookInput) *BookResolver {
-	newBook, err := query.bookRepo.AddBook(args.Input.Title, args.Input.Authors, args.Input.Year)
+	newBook, err := query.repoManager.BookRepo.AddBook(args.Input.Title, args.Input.Authors, args.Input.Year)
 	if err != nil {
 		return nil
 	}
-	return &BookResolver{newBook, query}
+	return &BookResolver{newBook, query.repoManager}
 }
 
 func (query *QueryResolver) AddAuthor(ctx context.Context, args authorInput) *AuthorResolver {
-	newAuthor, err := query.authorRepo.AddAuthor(args.Input.Name)
+	newAuthor, err := query.repoManager.AuthorRepo.AddAuthor(args.Input.Name)
 	if err != nil {
 		return nil
 	}
-	return &AuthorResolver{newAuthor, query}
+	return &AuthorResolver{newAuthor, query.repoManager}
 }
 
 func (query *QueryResolver) UpdateAuthor(ctx context.Context, args authorInput) *AuthorResolver {
-	updatedAuthor, err := query.authorRepo.UpdateAuthor(args.Id, args.Input.Name)
+	updatedAuthor, err := query.repoManager.AuthorRepo.UpdateAuthor(args.Id, args.Input.Name)
 	if err != nil {
 		return nil
 	}
-	return &AuthorResolver{updatedAuthor, query}
+	return &AuthorResolver{updatedAuthor, query.repoManager}
 }
